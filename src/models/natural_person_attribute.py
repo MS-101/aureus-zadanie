@@ -21,4 +21,3 @@ class NaturalPersonAttribute(BaseModel):
     created_by: Mapped[str]
     deleted_by: Mapped[Optional[str]]
     attribute_value: Mapped[dict] = mapped_column(JSON)
-

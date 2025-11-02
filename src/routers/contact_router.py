@@ -81,7 +81,7 @@ async def post_contact_info(natural_person_dto: NaturalPersonDto, natural_person
     if natural_person_dto.eduid:
         stmt = update(NaturalPersonAttribute).where(
             NaturalPersonAttribute.person_id == person_id,
-            NaturalPersonAttribute.person_attribute_type_id == NaturalPersonAttributeTypeEnum.ADDRESS.value,
+            NaturalPersonAttribute.person_attribute_type_id == NaturalPersonAttributeTypeEnum.EDUID.value,
             NaturalPersonAttribute.valid_to == None
         ).values(
             valid_to=func.now()
@@ -99,27 +99,54 @@ async def post_contact_info(natural_person_dto: NaturalPersonDto, natural_person
         db.execute(stmt)
     
     if natural_person_dto.address:
-        stmt = update(NaturalPersonAttribute).where(
+        
+
+        stmt = select(NaturalPersonAttribute).where(
             NaturalPersonAttribute.person_id == person_id,
             NaturalPersonAttribute.person_attribute_type_id == NaturalPersonAttributeTypeEnum.ADDRESS.value,
             NaturalPersonAttribute.valid_to == None
-        ).values(
-            valid_to=func.now()
         )
+        natural_person_attribute = db.execute(stmt).scalars().first()
+        if natural_person_attribute:
+            natural_person_attribute.valid_to = func.now()
+
+            natural_person_attribute_values = {
+                "city": natural_person_attribute.attribute_value["value"].get("city"),
+                "street": natural_person_attribute.attribute_value["value"].get("street"),
+                "country": natural_person_attribute.attribute_value["value"].get("country"),
+                "number_o": natural_person_attribute.attribute_value["value"].get("number_o"),
+                "number_s": natural_person_attribute.attribute_value["value"].get("number_s"),
+                "zip_code": natural_person_attribute.attribute_value["value"].get("zip_code")
+            }
+        else:
+            natural_person_attribute_values = {
+                "city": "",
+                "street": "",
+                "country": "",
+                "number_o": "",
+                "number_s": "",
+                "zip_code": ""
+            }
+
+        if natural_person_dto.address.city:
+            natural_person_attribute_values["city"] = natural_person_dto.address.city
+        if natural_person_dto.address.street:
+            natural_person_attribute_values["street"] = natural_person_dto.address.street
+        if natural_person_dto.address.country:
+            natural_person_attribute_values["country"] = natural_person_dto.address.country
+        if natural_person_dto.address.number_o:
+            natural_person_attribute_values["number_o"] = natural_person_dto.address.number_o
+        if natural_person_dto.address.number_s:
+            natural_person_attribute_values["number_s"] = natural_person_dto.address.number_s
+        if natural_person_dto.address.zip_code:
+            natural_person_attribute_values["zip_code"] = natural_person_dto.address.zip_code
 
         stmt = insert(NaturalPersonAttribute).values(
             person_id=person_id,
             person_attribute_type_id=NaturalPersonAttributeTypeEnum.ADDRESS.value,
             created_by=person_id,
             attribute_value={
-                "value": {
-                    "city": natural_person_dto.address.city,
-                    "street": natural_person_dto.address.street,
-                    "country": natural_person_dto.address.country,
-                    "number_o": natural_person_dto.address.number_o,
-                    "number_s": natural_person_dto.address.number_s,
-                    "zip_code": natural_person_dto.address.zip_code
-                }
+                "value": natural_person_attribute_values
             }
         )
         db.execute(stmt)

@@ -1,6 +1,7 @@
 # users.py
 from fastapi import APIRouter
 
+
 loan_router = APIRouter(tags=["Loan"])
 
 @loan_router.get("/loans")
