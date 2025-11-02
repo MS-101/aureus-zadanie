@@ -1,2 +1,2 @@
-from .address_dto import AddressDto
-from .natural_person_dto import NaturalPersonDto
+from .natural_person_dto import AddressDto, NaturalPersonDto
+from .loan_dto import LoanDto

@@ -2,13 +2,13 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy import select, insert, update, func
 
 from src.dependencies import NaturalPersonDependency
-from src.dtos import AddressDto, NaturalPersonDto
+from src.dtos import NaturalPersonDto
 from src.models import NaturalPerson, NaturalPersonView, NaturalPersonAttribute, NaturalPersonAttributeTypeEnum
 
 
 contact_router = APIRouter(prefix="/contact", tags=["Contact Info"])
 
-@contact_router.get("/info", response_model=NaturalPersonDto, responses={
+@contact_router.get("/info", description="Get specific user Contact information", response_model=NaturalPersonDto, responses={
     200: {"description": "Successful operation"},
     400: {"description": "Bad request - malformed request"},
     403: {"description": "Forbidden - insufficient rights to access requested resource"},
@@ -20,31 +20,15 @@ async def get_contact_info(natural_person_args: NaturalPersonDependency):
     if not natural_person_view:
         raise HTTPException(status_code=404, detail="Resource not found")
 
-    return NaturalPersonDto(
-        eduid=natural_person_view.eduid,
-        title_before=natural_person_view.title_before,
-        first_name=natural_person_view.first_name,
-        last_name=natural_person_view.last_name,
-        title_after=natural_person_view.title_after,
-        address=AddressDto(
-            country=natural_person_view.country,
-            city=natural_person_view.city,
-            zip_code=natural_person_view.zip_code,
-            street=natural_person_view.street,
-            number_s=natural_person_view.number_s,
-            number_o=natural_person_view.number_o
-        ),
-        email=natural_person_view.email,
-        phone_number=natural_person_view.phone_number
-    )
+    return NaturalPersonDto.from_view(natural_person_view)
 
 
-@contact_router.post("/info", status_code=201, response_model=NaturalPersonDto, responses={
+@contact_router.post("/info", description="Update User information", status_code=201, response_model=NaturalPersonDto, responses={
     201: {"description": "Successful operation"},
     400: {"description": "Bad request - malformed request"},
     403: {"description": "Forbidden - insufficient rights to access requested resource"}
 })
-async def post_contact_info(natural_person_dto: NaturalPersonDto, natural_person_args: NaturalPersonDependency):
+async def post_contact_info(natural_person_args: NaturalPersonDependency, natural_person_dto: NaturalPersonDto):
     db = natural_person_args.db
     natural_person_view = natural_person_args.natural_person_view
 
@@ -99,8 +83,6 @@ async def post_contact_info(natural_person_dto: NaturalPersonDto, natural_person
         db.execute(stmt)
     
     if natural_person_dto.address:
-        
-
         stmt = select(NaturalPersonAttribute).where(
             NaturalPersonAttribute.person_id == person_id,
             NaturalPersonAttribute.person_attribute_type_id == NaturalPersonAttributeTypeEnum.ADDRESS.value,
@@ -156,20 +138,4 @@ async def post_contact_info(natural_person_dto: NaturalPersonDto, natural_person
     stmt = select(NaturalPersonView).where(NaturalPersonView.person_id == person_id)
     result = db.execute(stmt).scalars().one()
 
-    return NaturalPersonDto(
-        eduid=result.eduid,
-        title_before=result.title_before,
-        first_name=result.first_name,
-        last_name=result.last_name,
-        title_after=result.title_after,
-        address=AddressDto(
-            country=result.country,
-            city=result.city,
-            zip_code=result.zip_code,
-            street=result.street,
-            number_s=result.number_s,
-            number_o=result.number_o
-        ),
-        email=result.email,
-        phone_number=result.phone_number
-    )
+    return NaturalPersonDto.from_view(result)
