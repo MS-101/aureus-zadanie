@@ -11,7 +11,7 @@ from src.models import NaturalPersonView
 
 load_dotenv(".env")
 
-db_driver = os.environ.get("DB_DRIVER")
+db_driver = "postgresql"
 db_username = os.environ.get("DB_USERNAME")
 db_password = os.environ.get("DB_PASSWORD")
 db_host = os.environ.get("DB_HOST")
