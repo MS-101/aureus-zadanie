@@ -1,11 +1,12 @@
 # Python backend server
 
-This repository contains a implementation of REST API service for management of loans.
+This repository contains an implementation of REST API service for management of loans.
 
 ## Requirements
 
 -   python 3.13.1
 -   PostgreSQL
+-   Docker
 -   fastapi
 -   uvicorn
 -   sqlalchemy
