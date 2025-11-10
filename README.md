@@ -12,7 +12,7 @@ This repository contains an implementation of REST API service for management of
 -   sqlalchemy
 -   psycopg2
 
-## Installation Guide
+## Installation guide
 
 ### Virtual enviroment
 
@@ -30,7 +30,7 @@ You will need to install PostgreSQL (https://www.postgresql.org/) on your server
 1. Install Docker: https://www.docker.com/
 1. Build and run the containers using command: `docker compose up --build`
 
-## User Guide
+## User guide
 
 The following endpoints have been implemented:
 
