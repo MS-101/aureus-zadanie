@@ -27,8 +27,8 @@ You will need to install PostgreSQL (https://www.postgresql.org/) on your server
 ### Docker
 
 1. Create .env file according to .env.example (DB_HOST and DB_PORT will be set automatically)
-1. Install Docker: https://www.docker.com/
-1. Build and run the containers using command: `docker compose up --build`
+2. Install Docker: https://www.docker.com/
+3. Build and run the containers using command: `docker compose up --build`
 
 ## User guide
 
