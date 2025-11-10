@@ -24,8 +24,6 @@ You will need to install PostgreSQL (https://www.postgresql.org/) on your server
 4. Create .env file according to .env.example
 5. Run server: `uvicorn src.main:app --reload --port 80`
 
-Explain here how to set up .venv, install requirements.txt and run server using uvicorn
-
 ### Docker
 
 1. Create .env file according to .env.example (DB_HOST and DB_PORT will be set automatically)
